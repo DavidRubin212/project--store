@@ -1,5 +1,5 @@
 // ProductList.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
  
 interface Product {
@@ -40,7 +40,7 @@ const ProductList = () => {
       .then((response) => response.json())
       .then((data) => {
         // Sort categories based on total clicks in descending order
-        const sortedCategories = data.sort((a, b) => b.clicks - a.clicks);
+        const sortedCategories: Category[] = data.sort((a: Product, b: Product) => b.clicks - a.clicks);
 
         // Create an array to store the top 5 products for each category
         const topProducts: Product[] = [];
