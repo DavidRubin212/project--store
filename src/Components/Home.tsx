@@ -1,9 +1,11 @@
 // ProductList.tsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
+
  
 interface Product {
-  _id: string;
+  product_id: string;
   title: string;
   description: string;
   quantity: number;
@@ -58,12 +60,15 @@ const ProductList = () => {
       .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
-  return (
+  return (<>
+ 
     <div>
-      <h1>Top Categories and Products</h1>
+      <h2>Top Categories and Products</h2>
       {categories.map((category, index) => (
         <div key={index}>
-          <h2>{category.name}</h2>
+          <a href={`/category/${category.name}`}><h2>{category.name}</h2></a>
+
+          
           <p>Total Clicks: {category.clicks}</p>
           <div
             style={{
@@ -74,8 +79,8 @@ const ProductList = () => {
           >
             {category.products.slice(0, 5).map((product) => (
               <Link
-                to={`/shop/${product._id}`} // Link to the product details page
-                key={product._id}
+                to={`/product/${product.product_id}`} // Link to the product details page
+                key={product.product_id}
                 style={{
                   textDecoration: "none",
                   color: "inherit",
@@ -102,12 +107,20 @@ const ProductList = () => {
                   />
                 </div>
               </Link>
+              
             ))}
           </div>
         </div>
       ))}
     </div>
+    </>
   );
 };
 
 export default ProductList;
+
+{/* <BrowserRouter>
+  <Routes>
+    <Route path="/product" element={<ProductDetails product_id={product.product_id}/>} />
+  </Routes>
+</BrowserRouter> */}

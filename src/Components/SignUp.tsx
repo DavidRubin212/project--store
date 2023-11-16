@@ -30,7 +30,12 @@ function SignUp() {
       });
 
       if (response.ok) {
-        console.log("User signed up successfully!");
+        console.log("User signed up successfully!")
+        const data = await response.json()
+        console.log(data)
+        localStorage.setItem("user_name", data.user_name)
+        localStorage.setItem("user_id", data.user_id)
+          
         setSignupSuccess(true); // Set the state to indicate successful signup
       } else {
         console.error(

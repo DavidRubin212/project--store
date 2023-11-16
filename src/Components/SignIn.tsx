@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -17,6 +18,7 @@ function SignIn() {
 	const [isAuthenticated, setAuthenticated] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const navigate = useNavigate()
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -36,6 +38,9 @@ function SignIn() {
 
 			if (response.ok) {
 				console.log("User signed in successfully!");
+				const data = await response.json()
+				console.log(data)
+				localStorage.setItem("token", data.accessToken)
 				setEmail(email);
 				setPassword(password);
 				setAuthenticated(true);
@@ -45,6 +50,7 @@ function SignIn() {
 		} catch (error) {
 			console.error("Error during signin:", error.message);
 		}
+		navigate(-1)
 	};
 
 	const defaultTheme = createTheme();
@@ -67,8 +73,7 @@ function SignIn() {
 					<Typography component="h1" variant="h5">
 						Sign in
 					</Typography>
-					{!isAuthenticated ? ( // Render the sign-in form if not authenticated
-						<Box
+					<Box
 							component="form"
 							onSubmit={handleSubmit}
 							noValidate
@@ -117,11 +122,9 @@ function SignIn() {
 								</Grid>
 							</Grid>
 						</Box>
-					) : (
-						<Home email={email} password={password} />
-					)}
 				</Box>
 			</Container>
+			{isAuthenticated?<p>yes</p>:<p>no</p>}
 		</ThemeProvider>
 	);
 }
