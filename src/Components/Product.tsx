@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import MapComponent from "./Map";
 interface Product {
     product_id: string;
     title: string;
@@ -68,38 +69,41 @@ function ProductDetails () {
         return <div>Loading...</div>;
     }
     return (
-        <div style={{display:"grid" ,border: '1px solid #ccc', padding: '10px', margin: '10px', width: '100%', maxWidth: '400px' }}>
-          <h2>Product info:</h2>
-          <h4>{product.title}</h4>
-          <p>{product.description && `Description: ${product.description}`}</p>
-          <p>{`Quantity: ${product.quantity}`}</p>
-          <p>{`Clicks: ${product.clicks}`}</p>
-          <p>{`Price: $${product.price}`}</p>
-          {product.liters && <p>{`Liters: ${product.liters}`}</p>}
-          {product.brand && <p>{`Brand: ${product.brand}`}</p>}
-          {product.watts && <p>{`Watts: ${product.watts}`}</p>}
-          {product.screen_size && <p>{`Screen Size: ${product.screen_size}"`}</p>}
-          {product.size && <p>{`Size: ${product.size}`}</p>}
-          {product.doors && <p>{`Doors: ${product.doors}`}</p>}
-          <img
-            src={product.image}
-            alt={product.title}
-            style={{ maxWidth: '100%', maxHeight: '120px', marginTop: '10px' }}
-          />
-          <label>
-            Quantity:
-            <input
-              type="number"
-              value={quantity}
-              onChange={handleQuantityChange}
-              min="0"
-              style={{ marginTop: '10px' }}
-            />
-          </label>
-          <button style={{ marginTop: '10px' }} onClick={handleAddToCart}>
-            Add to Cart
-          </button>
-        </div>
+        <>
+            <div style={{display:"grid" ,border: '1px solid #ccc', padding: '10px', margin: '10px', width: '100%', maxWidth: '400px' }}>
+            <h2>Product info:</h2>
+            <h4>{product.title}</h4>
+            <p>{product.description && `Description: ${product.description}`}</p>
+            <p>{`Quantity: ${product.quantity}`}</p>
+            <p>{`Clicks: ${product.clicks}`}</p>
+            <p>{`Price: $${product.price}`}</p>
+            {product.liters && <p>{`Liters: ${product.liters}`}</p>}
+            {product.brand && <p>{`Brand: ${product.brand}`}</p>}
+            {product.watts && <p>{`Watts: ${product.watts}`}</p>}
+            {product.screen_size && <p>{`Screen Size: ${product.screen_size}"`}</p>}
+            {product.size && <p>{`Size: ${product.size}`}</p>}
+            {product.doors && <p>{`Doors: ${product.doors}`}</p>}
+            <img
+                src={product.image}
+                alt={product.title}
+                style={{ maxWidth: '100%', maxHeight: '120px', marginTop: '10px' }}
+                />
+            <label>
+                Quantity:
+                <input
+                type="number"
+                value={quantity}
+                onChange={handleQuantityChange}
+                min="0"
+                style={{ marginTop: '10px' }}
+                />
+            </label>
+            <button style={{ marginTop: '10px' }} onClick={handleAddToCart}>
+                Add to Cart
+            </button>
+            </div>
+            <MapComponent points={product.available_in}/>
+        </>
       );
     };
 export default ProductDetails;
