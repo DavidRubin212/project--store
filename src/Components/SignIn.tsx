@@ -22,7 +22,8 @@ function SignIn() {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-
+		console.log(2);
+		
 		const formData = new FormData(event.currentTarget);
 		const email = formData.get("email") as string;
 		const password = formData.get("password") as string;
@@ -35,18 +36,25 @@ function SignIn() {
 				},
 				body: JSON.stringify({ email, password }),
 			});
+				
+ 			
+			console.log("jhfgvgswergjkghk5454",response);
+			
 
 			if (response.ok) {
+				const data = await response.json();
+				console.log("Server response:", data);
+				localStorage.setItem("user_id",JSON.stringify(data.user_id!))
+			
 				console.log("User signed in successfully!");
-				const data = await response.json()
-				console.log(data)
-				localStorage.setItem("token", data.accessToken)
+				localStorage.setItem("token", data.accessToken);
 				setEmail(email);
 				setPassword(password);
 				setAuthenticated(true);
 			} else {
-				setError("Invalid email or password"); // Set an error message for invalid credentials
+				setError("Invalid email or password");
 			}
+			
 		} catch (error) {
 			console.error("Error during signin:", error.message);
 		}
@@ -54,7 +62,8 @@ function SignIn() {
 	};
 
 	const defaultTheme = createTheme();
-
+	console.log("hey");
+	
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<Container component="main" maxWidth="xs">
@@ -73,11 +82,11 @@ function SignIn() {
 					<Typography component="h1" variant="h5">
 						Sign in
 					</Typography>
-					<Box
-							component="form"
+					<form
+							// component="form"
 							onSubmit={handleSubmit}
-							noValidate
-							sx={{ mt: 1 }}
+							// noValidate
+							// sx={{ mt: 1 }}
 						>
 							<TextField
 								margin="normal"
@@ -121,10 +130,10 @@ function SignIn() {
 									</Link>
 								</Grid>
 							</Grid>
-						</Box>
+						</form>
 				</Box>
 			</Container>
-			{isAuthenticated?<p>yes</p>:<p>no</p>}
+			{isAuthenticated?<p>connected</p>:<p>not connected</p>}
 		</ThemeProvider>
 	);
 }

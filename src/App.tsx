@@ -7,14 +7,16 @@ import Home from './Components/Home';
 import SignUp from './Components/SignUp';
 import Category from './Components/Category';
 import ProductDetails from './Components/Product';
-
+import ShoppingCart from './Components/Cart'
 function App() {
 
   return (
 
     <>
      <nav>
-        <a href="/home">Home</a>
+        <a href="/">Home</a>
+      |
+      <a href='/cart'>cart</a>
       |
         <a href="/sign in">sign in</a>
       |
@@ -43,13 +45,14 @@ function App() {
 
       <BrowserRouter>
         <Routes>
-          <Route path="/home" element={<Home/>} />
+          <Route path="/" element={<Home/>} />
+          <Route path='cart' element={<ShoppingCart/>}/>
           <Route path="/sign in" element={<SignIn/>} />
           <Route path="/sign up" element={<SignUp/>} />
           <Route path="/product/:product_id" element={<ProductDetails/>} />
-          <Route path="/category/phones" element={<Category category_id='65547c770bf45c89e9d14f22'/>} />
-          <Route path="/category/refrigerators" element={<Category category_id='65547c770bf45c89e9d14f21'/>} />
-          <Route path="/category/shirts" element={<Category category_id='65547c770bf45c89e9d14f23'/>} />
+          <Route path="/category/phones" element={<Category category_id='65561986769e7d3a90c81bf9'/>} />
+          <Route path="/category/refrigerators" element={<Category category_id='65561986769e7d3a90c81bf8'/>} />
+          <Route path="/category/shirts" element={<Category category_id='65561986769e7d3a90c81bfa'/>} />
           <Route path="/category/laptops" element={<Category category_id='65547c770bf45c89e9d14f24'/>} />
           <Route path="/category/chargers" element={<Category category_id='65547c770bf45c89e9d14f25'/>} />
           <Route path="/category/headphones" element={<Category category_id='65547c770bf45c89e9d14f26'/>} />
