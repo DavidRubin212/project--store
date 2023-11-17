@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Home from "./Home";
- 
+
 function SignIn() {
 	const [error, setError] = useState("");
 	const [isAuthenticated, setAuthenticated] = useState(false);
@@ -36,17 +36,47 @@ function SignIn() {
 				body: JSON.stringify({ email, password }),
 			});
 
+
 			if (response.ok) {
+				const data = await response.json();
+				console.log("Server response:", data);
+				localStorage.setItem("user_id", JSON.stringify(data.user_id!))
+
 				console.log("User signed in successfully!");
-				const data = await response.json()
-				console.log(data)
-				localStorage.setItem("token", data.accessToken)
+				localStorage.setItem("token", data.accessToken);
+				localStorage.setItem("login", "true");
+
+				try {
+					const cartFromLS = localStorage.getItem('cart')
+					const rer = await fetch("http://localhost:3000/cart/update", {
+						method: "PUT",
+						headers: {
+							'Authorization': `Bearer ${data.authToken}`,
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							user_id: data.user_id!,
+							cartFromLS
+						})
+					})
+					if (res.ok) {
+						const data = await response.json();
+						console.log("Server response:", data)
+
+				} 
+				}
+				catch (error) {
+					console.error("Error during pushing cart to data: ", error.message);
+				}
+
+
 				setEmail(email);
 				setPassword(password);
 				setAuthenticated(true);
 			} else {
-				setError("Invalid email or password"); // Set an error message for invalid credentials
+				setError("Invalid email or password");
 			}
+
 		} catch (error) {
 			console.error("Error during signin:", error.message);
 		}
@@ -73,58 +103,58 @@ function SignIn() {
 					<Typography component="h1" variant="h5">
 						Sign in
 					</Typography>
-					<Box
-							component="form"
-							onSubmit={handleSubmit}
-							noValidate
-							sx={{ mt: 1 }}
-						>
-							<TextField
-								margin="normal"
-								required
-								fullWidth
-								id="email"
-								label="Email Address"
-								name="email"
-								autoComplete="email"
-								autoFocus
-							/>
-							<TextField
-								margin="normal"
-								required
-								fullWidth
-								name="password"
-								label="Password"
-								type="password"
-								id="password"
-								autoComplete="current-password"
-							/>
+					<form
+						// component="form"
+						onSubmit={handleSubmit}
+					// noValidate
+					// sx={{ mt: 1 }}
+					>
+						<TextField
+							margin="normal"
+							required
+							fullWidth
+							id="email"
+							label="Email Address"
+							name="email"
+							autoComplete="email"
+							autoFocus
+						/>
+						<TextField
+							margin="normal"
+							required
+							fullWidth
+							name="password"
+							label="Password"
+							type="password"
+							id="password"
+							autoComplete="current-password"
+						/>
 
-							{error && (
-								<Typography variant="body2" color="error">
-									{error}
-								</Typography>
-							)}
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								sx={{ mt: 3, mb: 2 }}
-							>
-								Sign In
-							</Button>
-							<Grid container>
-								<Grid item xs></Grid>
-								<Grid item>
-									<Link href="Sign Up" variant="body2">
-										{"Don't have an account? Sign Up"}
-									</Link>
-								</Grid>
+						{error && (
+							<Typography variant="body2" color="error">
+								{error}
+							</Typography>
+						)}
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							sx={{ mt: 3, mb: 2 }}
+						>
+							Sign In
+						</Button>
+						<Grid container>
+							<Grid item xs></Grid>
+							<Grid item>
+								<Link href="Sign Up" variant="body2">
+									{"Don't have an account? Sign Up"}
+								</Link>
 							</Grid>
-						</Box>
+						</Grid>
+					</form>
 				</Box>
 			</Container>
-			{isAuthenticated?<p>yes</p>:<p>no</p>}
+			{isAuthenticated ? <p>connected</p> : <p>not connected</p>}
 		</ThemeProvider>
 	);
 }

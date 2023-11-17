@@ -2,60 +2,54 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
-import SignIn from './Components/SignIn';
-import Home from './Components/Home';
-import SignUp from './Components/SignUp';
-import Category from './Components/Category';
-import ProductDetails from './Components/Product';
+import SignIn from './pages/SignIn';
+import Home from './pages/Home';
+import SignUp from './pages/SingUp';
+import ShoppingCart from './pages/Cart'
+import Category from './pages/Category';
+import ProductDetails from './pages/Product';
+import Header from './Components/Header';
+import HomeHeader from './Components/HomeHeader';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  components: {
+    MuiStack: {
+      defaultProps: {
+        useFlexGap: true,
+      },
+    },
+  },
+});
 
 function App() {
 
   return (
 
     <>
-     <nav>
-        <a href="/home">Home</a>
-      |
-        <a href="/sign in">sign in</a>
-      |
-        <a href="/sign up">sign up</a>
-      |
-        {localStorage.getItem("token")?<span>{localStorage.getItem('user_name')} you are registered  |<button onClick={()=>localStorage.setItem("token","")}>log out</button></span>:<span>you are not registered</span>}
-      
-     </nav>
+    
+    <ThemeProvider theme={theme}>
+    <Header/>
+    <HomeHeader/>
 
-     <nav>
-     <a href="/category/phones">phones</a>
-      |
-     <a href="/category/refrigerators">refrigerators</a>
-      |
-     <a href="/category/shirts">shirts</a>
-      |
-     <a href="/category/laptops">laptops</a>
-      |
-     <a href="/category/chargers">chargers</a>
-      |
-     <a href="/category/headphones">headphones</a>
-      |
-     <a href="/category/bottles">bottles</a>
-     </nav>
-     
 
       <BrowserRouter>
         <Routes>
           <Route path="/home" element={<Home/>} />
+          <Route path='cart' element={<ShoppingCart/>}/>
           <Route path="/sign in" element={<SignIn/>} />
           <Route path="/sign up" element={<SignUp/>} />
           <Route path="/product/:product_id" element={<ProductDetails/>} />
-          <Route path="/category/phones" element={<Category category_id='65547c770bf45c89e9d14f22'/>} />
-          <Route path="/category/refrigerators" element={<Category category_id='65547c770bf45c89e9d14f21'/>} />
-          <Route path="/category/shirts" element={<Category category_id='65547c770bf45c89e9d14f23'/>} />
-          <Route path="/category/laptops" element={<Category category_id='65547c770bf45c89e9d14f24'/>} />
-          <Route path="/category/chargers" element={<Category category_id='65547c770bf45c89e9d14f25'/>} />
-          <Route path="/category/headphones" element={<Category category_id='65547c770bf45c89e9d14f26'/>} />
-          <Route path="/category/bottles" element={<Category category_id='65547c770bf45c89e9d14f27'/>} />
+          <Route path="/category/phones" element={<Category name='phones'/>} />
+          <Route path="/category/refrigerators" element={<Category name='refrigerators'/>} />
+          <Route path="/category/shirts" element={<Category name='shirts'/>} />
+          <Route path="/category/laptops" element={<Category name='laptops'/>} />
+          <Route path="/category/chargers" element={<Category name='chargers'/>} />
+          <Route path="/category/headphones" element={<Category name='headphones'/>} />
+          <Route path="/category/bottles" element={<Category name='bottles'/>} />
         </Routes>
       </BrowserRouter>
+      </ThemeProvider>
 
     </>
   )

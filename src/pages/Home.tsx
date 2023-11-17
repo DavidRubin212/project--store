@@ -118,9 +118,3 @@ const ProductList = () => {
 };
 
 export default ProductList;
-
-{/* <BrowserRouter>
-  <Routes>
-    <Route path="/product" element={<ProductDetails product_id={product.product_id}/>} />
-  </Routes>
-</BrowserRouter> */}
