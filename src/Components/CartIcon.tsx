@@ -59,7 +59,7 @@ const CartIcon = () => {
           },
         }}
       >
-        <Badge badgeContent={cartQuantity} color="error" >
+        <Badge badgeContent={+cartQuantity} color="error" >
           <ShoppingCartIcon color="primary" />
         </Badge>
       </IconButton>

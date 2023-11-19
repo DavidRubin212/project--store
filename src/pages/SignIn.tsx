@@ -21,68 +21,55 @@ function SignIn() {
 	const navigate = useNavigate()
 
 	const handleSubmit = async (event) => {
-		event.preventDefault();
-
-		const formData = new FormData(event.currentTarget);
-		const email = formData.get("email") as string;
-		const password = formData.get("password") as string;
-
-		try {
-			const response = await fetch("http://localhost:3000/user/signin", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ email, password }),
-			});
-
-
-			if (response.ok) {
-				const data = await response.json();
-				console.log("Server response:", data);
-				localStorage.setItem("user_id", data.user_id!)
-
-				console.log("User signed in successfully!");
-				localStorage.setItem("token", data.accessToken);
-				localStorage.setItem("login", "true");
-
-				try {
-					const cartFromLS = localStorage.getItem('cart')
-					const rer = await fetch("http://localhost:3000/cart/update", {
-						method: "PUT",
-						headers: {
-							'Authorization': `Bearer ${data.authToken}`,
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							user_id: data.user_id!,
-							cartFromLS
-						})
-					})
-					if (res.ok) {
-						const data = await response.json();
-						console.log("Server response:", data)
-
-				} 
-				}
-				catch (error) {
-					console.error("Error during pushing cart to data: ", error.message);
-				}
-
-
-				setEmail(email);
-				setPassword(password);
-				setAuthenticated(true);
-			} else {
-				setError("Invalid email or password");
-			}
-
-		} catch (error) {
-			console.error("Error during signin:", error.message);
-		}
-		navigate(-1)
-	};
-
+        event.preventDefault();
+        console.log(2);
+        const formData = new FormData(event.currentTarget);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        try {
+            const response = await fetch("http://localhost:3000/user/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            console.log("jhfgvgswergjkghk5454",response);
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Server response:", data);
+                localStorage.setItem("user_id",JSON.stringify(data.user_id!))
+                console.log("User signed in successfully!");
+                const list:[{product:{product_id:string},quantity:number}] = JSON.parse(localStorage.getItem('cart'))
+                list.forEach((item)=>{
+                    const reqOp = {
+                        method:'PUT',
+                        body: {
+                        user_id: data.user_id,
+                         cart: [
+                          {
+                        prodact_id :item.product.product_id,
+                        quantity : item.quantity
+                          },
+                         ]
+                        },  headers: {
+                            'Authorization': `Bearer ${data.accessToken}`,
+                            'Content-Type': 'application/json',
+                          }}
+                    fetch('http://localhost:3000/cart/update', reqOp)
+                })
+                localStorage.setItem("token", data.accessToken);
+                setEmail(email);
+                setPassword(password);
+                setAuthenticated(true);
+            } else {
+                setError("Invalid email or password");
+            }
+        } catch (error) {
+            console.error("Error during signin:", error.message);
+        }
+        navigate(-1)
+    };
 	const defaultTheme = createTheme();
 
 	return (

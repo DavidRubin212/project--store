@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useSubmit } from 'react-router-dom'
 
 
-const InStock = ({quantity}: number | undefined) => {
+const InStock = ({ quantity }: number | undefined) => {
 
 
     const [inStock, setInStock] = useState<boolean>(true)
     useEffect(() => {
-        setInStock(quantity > 0 ? true : false)
+        if (quantity) {
+            setInStock(quantity > 0 ? true : false)
+        }
     }, [inStock])
     return (
         <h3 style={{ color: inStock ? 'green' : 'red' }}>

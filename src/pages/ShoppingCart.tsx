@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-import { json } from 'react-router-dom';
-
 export type ProductsCart = {
     product: {
         product_id: string,
@@ -10,8 +7,11 @@ export type ProductsCart = {
     },
     quantity: number
 }
-export async function getFromUserInDB(userID: string, authToken: string) {
 
+const authToken = localStorage.getItem('token');
+
+
+export async function getFromUserInDB(userID: string) {
     const requsetOptions = {
         method: 'GET',
         headers: {
@@ -27,29 +27,25 @@ export async function getFromUserInDB(userID: string, authToken: string) {
 function ShoppingCart() {
     const [cartData, setCartData] = useState<ProductsCart[]>([]);
     let arrOfProducts: any[]
-    const authToken = localStorage.getItem('token');
-    
     useEffect(() => {
         const fetchData = async () => {
             let userID
             if (localStorage.getItem('token')) {
                 userID = JSON.parse(localStorage.getItem('user_id'));
-                const arrOfProductsId = await getFromUserInDB(userID!, authToken!);
+                const arrOfProductsId = await getFromUserInDB(userID!);
                 arrOfProducts = await fromProductIDToListOfProducts(arrOfProductsId);
             } else {
                 const arrOfProductsId = JSON.parse(localStorage.getItem('cart')!);
                 arrOfProducts = await fromProductIDToListOfProducts(arrOfProductsId);
             }
-
             setCartData(arrOfProducts);
         };
-
         fetchData();
     }, []);
-
+    
     const addOne = async (productID: string, quantity: number) => {
         if (localStorage.getItem('token')) {
-            const userID = JSON.parse(localStorage.getItem('user_id')!);
+            const userID = localStorage.getItem('user_id');
             const requestOptions = {
                 method: 'PUT',
                 headers: {
@@ -72,7 +68,6 @@ function ShoppingCart() {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again later.');
             }
-
         } else {
             const updatedCart = cartData.map((item) => {
                 if (item.product.product_id === productID) {
@@ -80,15 +75,13 @@ function ShoppingCart() {
                 }
                 return item;
             });
-
             localStorage.setItem('cart', JSON.stringify(updatedCart))
             setCartData(JSON.parse(localStorage.getItem('cart')!));
         }
     };
-
     const reduceOne = async (productID: string, quantity: number) => {
         if (localStorage.getItem('token')) {
-            const userID = JSON.parse(localStorage.getItem('user_id')!);
+            const userID = localStorage.getItem('user_id');
             const requestOptions = {
                 method: 'PUT',
                 headers: {
@@ -103,7 +96,6 @@ function ShoppingCart() {
             try {
                 const response = await fetch('http://localhost:3000/cart/dec', requestOptions);
                 console.log(response);
-
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -113,7 +105,6 @@ function ShoppingCart() {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again later.');
             }
-
         } else {
             const updatedCart = cartData.map((item) => {
                 if (item.product.product_id === productID) {
@@ -125,10 +116,9 @@ function ShoppingCart() {
             setCartData(JSON.parse(localStorage.getItem('cart')!));
         }
     };
-
     const removeItem = async (productId: string) => {
         if (localStorage.getItem('token')) {
-            const userID = JSON.parse(localStorage.getItem('user_id')!);
+            const userID = localStorage.getItem('user_id');
             const requestOptions = {
                 method: 'PUT',
                 headers: {
@@ -151,7 +141,6 @@ function ShoppingCart() {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again later.');
             }
-
         } else {
             const updatedCart = cartData.filter((item) =>
                 item.product.product_id !== productId
@@ -160,10 +149,9 @@ function ShoppingCart() {
             setCartData(JSON.parse(localStorage.getItem('cart')!));
         }
     };
-
     const clearCart = async () => {
         if (localStorage.getItem('token')) {
-            const userID = JSON.parse(localStorage.getItem('user_id')!);
+            const userID = localStorage.getItem('user_id');
             const requestOptions = {
                 method: 'PUT',
                 headers: {
@@ -183,7 +171,6 @@ function ShoppingCart() {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again later.');
             }
-
         } else {
             const emptyCart = [{
                 product: {
@@ -197,18 +184,15 @@ function ShoppingCart() {
             localStorage.setItem('cart', JSON.stringify(emptyCart));
         }
     };
-
     const buy = () => {
         //לשנות בתוך הדאטה בייס
         console.log('mean time dont work, delete the cart in the local storge');
         clearCart()
         alert('payment sucssid! goodbye')
     };
-
     const calculateTotal = () => {
         return cartData.reduce((total, item) => total + item.product.price * item.quantity, 0);
     };
-
     async function fromProductIDToListOfProducts(arr: { product_id: string, quantity: number }[]) {
         const list = []
         for (let i = 0; i < arr.length; i++) {
@@ -216,7 +200,6 @@ function ShoppingCart() {
             const element = arr[i].product_id;
             const jsonItem = await fetch(`http://localhost:3000/shop/${element}`);
             const listItem = await jsonItem.json();
-
             list.push(
                 {
                     product: listItem.products[0],
@@ -226,53 +209,45 @@ function ShoppingCart() {
         }
         return list
     }
-
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartData));
     }, [cartData]);
-
     return (
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Action</th>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {cartData.map((item, index) => (
+                        <tr key={index}>
+                            <td><a href={`/product/${item.product.product_id}`}>{item.product.title}</a></td>
+                            <td>${item.product.price.toFixed(2)}</td>
+                            <td>
+                                <button onClick={() => reduceOne(item.product.product_id, item.quantity)}>-</button>
+                                {item.quantity}
+                                <button onClick={() => addOne(item.product.product_id, item.quantity)}>+</button>
+                            </td>
+                            <td>${(item.product.price * item.quantity).toFixed(2)}</td>
+                            <td>
+                                <button onClick={() => removeItem(item.product.product_id)}>Remove</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {cartData.map((item, index) => (
-                            <tr key={index}>
-                                <td><a href={`/product/${item.product.product_id}`}>{item.product.title}</a></td>
-                                <td>${item.product.price.toFixed(2)}</td>
-                                <td>
-                                    <button onClick={() => reduceOne(item.product.product_id, item.quantity)}>-</button>
-                                    {item.quantity}
-                                    <button onClick={() => addOne(item.product.product_id, item.quantity)}>+</button>
-                                </td>
-                                <td>${(item.product.price * item.quantity).toFixed(2)}</td>
-                                <td>
-                                    <button onClick={() => removeItem(item.product.product_id)}>Remove</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div>
-                    <h2>Total: ${calculateTotal().toFixed(2)}</h2>
-                    <button onClick={clearCart}>Empty Cart</button>
-
-
-
-
-                    <button onClick={buy}>payment</button>
-
-                </div>
+                    ))}
+                </tbody>
+            </table>
+            <div>
+                <h2>Total: ${calculateTotal().toFixed(2)}</h2>
+                <button onClick={clearCart}>Empty Cart</button>
+                <button onClick={buy}>payment</button>
             </div>
+        </div>
     );
 }
-
 export default ShoppingCart;

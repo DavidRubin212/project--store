@@ -10,7 +10,7 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 
 import logo from '../assets/logo.jpg'
 import CartIcon from './CartIcon';
-import { ProductsCart, getFromUserInDB } from '../pages/ShoppingCart';
+// import { ProductsCart, getFromUserInDB } from '../pages/ShoppingCart';
 
 
 const defaultTheme = createTheme();
@@ -33,24 +33,24 @@ export default function Header() {
 
   useEffect(() => {
 
-    fetchData = async () => {
+    // fetchData = async () => {
 
-      let totalQuantity;
+    //   let totalQuantity;
 
-      if (localStorage.getItem('token')) {
-        const userID = JSON.parse(localStorage.getItem('user_id',));
-        totalQuantity = await getFromUserInDB(userID!, authToken!);
-        calculateTotalQuantity(totalQuantity)
-          ;
-      } else {
-        const cartData = JSON.parse(localStorage.getItem('cart')) || [];
-        calculateTotalQuantity(cartData)
-      }
+    //   if (localStorage.getItem('token')) {
+    //     const userID = JSON.parse(localStorage.getItem('user_id',));
+    //     totalQuantity = await getFromUserInDB(userID!, authToken!);
+    //     calculateTotalQuantity(totalQuantity)
+    //       ;
+    //   } else {
+    //     const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+    //     calculateTotalQuantity(cartData)
+    //   }
 
-      // Update the cartQuantity state
-      setCartQuantity(totalQuantity);
-    }
-    fetchData()
+    //   // Update the cartQuantity state
+    //   setCartQuantity(totalQuantity);
+    // }
+    // fetchData()
 
 
     const handleScroll = () => {

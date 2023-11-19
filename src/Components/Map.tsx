@@ -58,8 +58,8 @@ function MapComponent({ points }: MapComponentProps) {
         markersLayer
       ],
       view: new View({
-        center: [3893903,3770461],
-        zoom: 8,
+        center: [120,950],
+        zoom: 3,
         minZoom: 0,
         maxZoom: 28,
       }),

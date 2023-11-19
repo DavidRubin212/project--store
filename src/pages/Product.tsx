@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate  } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MapComponent from "../Components/Map";
 import { Box, Button, Rating } from "@mui/material";
 
@@ -30,19 +30,19 @@ interface ProductProps {
     product_id: string;
 }
 
-function ProductDetails( ) {
+function ProductDetails() {
     const { product_id, category_id } = useParams<{ product_id: string, category_id: string }>();
     const [rating, setRating] = useState<number>(1);
     const [cartData, setCartData] = useState<ProductsCart[]>([]);
     const [product, setProduct] = useState<Product | null>(null);
     const [quantityState, setQuantityState] = useState<number>(1);
     const [quantity, setQuantity] = useState<number>(1);
-    
+
 
     const navigate = useNavigate()
     const authToken = localStorage.getItem('token');
 
-    function CompereProduct () {
+    function CompereProduct() {
         navigate(`/go to compere/${product_id}/${category_id}`)
     }
 
@@ -64,42 +64,32 @@ function ProductDetails( ) {
 
     }, []);
 
-    const handleAddToCart = async (productID: string) => {
-        if (localStorage.getItem('token')) {
-            const userID = JSON.parse(localStorage.getItem('user_id')!);
-            const requestOptions = {
-                method: 'PUT',
+    const handleAddToCart = () => {
+        if (localStorage.getItem("token")) {
+            const user_id1 = JSON.parse(localStorage.getItem('user_id'))
+            const authToken = localStorage.getItem("token")
+            // Add the product to the user's cart by updating the cart in the database
+            fetch("http://localhost:3000/cart/inc", {
+                method: "PUT",
                 headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${authToken}`
                 },
                 body: JSON.stringify({
-                    user_id: userID,
-                    product_id: productID
+                    user_id: user_id1,
+                    product_id: product_id,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("Product added to cart:", data);
+                    // You can redirect to the cart page or show a success message here
                 })
-            };
-            try {
-                const response = await fetch('http://localhost:3000/cart/inc', requestOptions);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setCartData(data);
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again later.');
-            }
-
+                .catch((error) => console.error("Error updating cart:", error));
         } else {
-            const updatedCart = cartData.map((item) => {
-                if (item.product.product_id === productID) {
-                    return { ...item, quantity: quantity + 1 };
-                }
-                return item;
-            });
-
-            localStorage.setItem('cart', JSON.stringify(updatedCart))
-            setCartData(JSON.parse(localStorage.getItem('cart')!));
+            const list = JSON.parse(localStorage.getItem('cart')!)
+            list.push({ product_id: product_id, quantity: quantity })
+            localStorage.setItem('cart', JSON.stringify(list))
         }
     };
 
@@ -137,7 +127,7 @@ function ProductDetails( ) {
                 {product.doors && <p>{`Doors: ${product.doors}`}</p>}
 
 
-                <Button variant="contained" onClick={() => handleAddToCart(product!.product_id)}>
+                <Button variant="contained" onClick={handleAddToCart}>
                     {'Add to Cart'}
                 </Button>
                 <Button style={{ marginTop: '10px' }} onClick={CompereProduct}>

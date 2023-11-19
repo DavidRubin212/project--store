@@ -135,7 +135,7 @@ function CompereProducts() {
                 />
                 <h4></h4>
                 <h3>{product_2?.description && `Description: ${product_2?.description}`}</h3>
-                <InStock quantity={product_2!.quantity && product_2!.quantity} />
+                <InStock quantity={product_2?.quantity} />
                 <p>{`Rating: ${product_2?.clicks}`}</p>
                 <Box >
                     <Rating

@@ -39,7 +39,7 @@ const HomeHeader = () => {
 
                     </Typography>
 
-                    <CartIcon cartItemsCount={cartItemsCount!} />
+                    <CartIcon cartItemsCount={+cartItemsCount!} />
 
                     {localStorage.getItem("token") ?
                         <h3 style={{ marginLeft: '1%' }}>{localStorage.getItem('user_name')}

@@ -33,8 +33,6 @@ function App() {
       <ThemeProvider theme={theme}>
         <Header />
         <HomeHeader />
-
-
         
           <Routes>
             <Route path="/home" element={<Home />} />

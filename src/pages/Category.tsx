@@ -134,7 +134,7 @@ function Category({ name }: CategoryProps) {
                                 Filter by:
                             </Typography>
                             <Typography variant="h5">
-                                Price Range
+                                Price Range;
                             </Typography>
                             <Slider
                                 value={priceRange}
