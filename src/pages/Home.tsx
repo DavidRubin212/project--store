@@ -79,7 +79,7 @@ const ProductList = () => {
           >
             {category.products.slice(0, 5).map((product) => (
               <Link
-                to={`/product/${product.product_id}`} // Link to the product details page
+              to={`/product/${product.product_id}/${category._id}`} // Link to the product details page
                 key={product.product_id}
                 style={{
                   textDecoration: "none",

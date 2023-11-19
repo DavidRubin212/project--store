@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate  } from "react-router-dom";
 import MapComponent from "../Components/Map";
 import { Box, Button, Rating } from "@mui/material";
 
 import InStock from "../Components/InStock";
 import ratingFunc from "../function/ratingFunc";
-interface Product {
+import { ProductsCart } from "./ShoppingCart";
+export interface Product {
     product_id: string;
     title: string;
     description: string;
@@ -29,11 +30,22 @@ interface ProductProps {
     product_id: string;
 }
 
-function ProductDetails() {
-    const { product_id } = useParams<{ product_idParams: string }>();
-    const [product, setProduct] = useState<Product | null>(null);
+function ProductDetails( ) {
+    const { product_id, category_id } = useParams<{ product_id: string, category_id: string }>();
     const [rating, setRating] = useState<number>(1);
+    const [cartData, setCartData] = useState<ProductsCart[]>([]);
+    const [product, setProduct] = useState<Product | null>(null);
     const [quantityState, setQuantityState] = useState<number>(1);
+    const [quantity, setQuantity] = useState<number>(1);
+    
+
+    const navigate = useNavigate()
+    const authToken = localStorage.getItem('token');
+
+    function CompereProduct () {
+        navigate(`/go to compere/${product_id}/${category_id}`)
+    }
+
     useEffect(() => {
         // Fetch product details based on the product_id parameter
         fetch(`http://localhost:3000/shop/${product_id}`)
@@ -49,80 +61,93 @@ function ProductDetails() {
             .catch((error) =>
                 console.error("Error fetching product details:", error)
             );
+
     }, []);
 
-    const handleAddToCart = () => {
-        if (localStorage.getItem("token")) {
-            const user_id1 = JSON.parse(localStorage.getItem("user_id"!)!)
-            const authToken = localStorage.getItem("token")
-            // Add the product to the user's cart by updating the cart in the database
-            fetch("http://localhost:3000/cart/inc", {
-                method: "PUT",
+    const handleAddToCart = async (productID: string) => {
+        if (localStorage.getItem('token')) {
+            const userID = JSON.parse(localStorage.getItem('user_id')!);
+            const requestOptions = {
+                method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${authToken}`
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-
-                    product_id: product_id,
-                    user_id: user_id1
-                }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log("Product added to cart:", data);
-                    // You can redirect to the cart page or show a success message here
+                    user_id: userID,
+                    product_id: productID
                 })
-                .catch((error) => console.error("Error updating cart:", error));
+            };
+            try {
+                const response = await fetch('http://localhost:3000/cart/inc', requestOptions);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCartData(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            }
+
         } else {
-            const list = JSON.parse(localStorage.getItem('cart')!)
-            list.push({ product_id: product_id, quantity: quantity })
-            localStorage.setItem('cart', JSON.stringify(list))
+            const updatedCart = cartData.map((item) => {
+                if (item.product.product_id === productID) {
+                    return { ...item, quantity: quantity + 1 };
+                }
+                return item;
+            });
+
+            localStorage.setItem('cart', JSON.stringify(updatedCart))
+            setCartData(JSON.parse(localStorage.getItem('cart')!));
         }
     };
 
-if (!product) {
-    return <div> Loading...</div>;
-}
-return (
-    <>
-        <div style={{ display: "grid", border: '1px solid #ccc', padding: '10px', margin: '10px', width: '100%' }}>
-            <h2>{product.title}</h2>
-            <img
-                src={product.image}
-                alt={product.title}
-                style={{
-                    Width: '100%', Height: 'auto', display: 'block', marginTop: '10px', maxWidth: '100%',
-                    maxheight: '100%'
-                }}
-            />
-            <h4></h4>
-            <h3>{product.description && `Description: ${product.description}`}</h3>
-            <InStock quantity={product.quantity} />
-            <p>{`Rating: ${product.clicks}`}</p>
-            <Box >
-                <Rating
-                    name="simple-controlled"
-                    defaultValue={ratingFunc(product.clicks)} precision={0.2} readOnly
-                /></Box>
-            <h2>{`Price: $${product.price}`}</h2>
-            <h4>More details :</h4>
-            {product.liters && <p>{`Liters: ${product.liters}`}</p>}
-            {product.brand && <p>{`Brand: ${product.brand}`}</p>}
-            {product.watts && <p>{`Watts: ${product.watts}`}</p>}
-            {product.screen_size && <p>{`Screen Size: ${product.screen_size}`}</p>}
-            {product.size && <p>{`Size: ${product.size}`}</p>}
-            {product.doors && <p>{`Doors: ${product.doors}`}</p>}
+    if (!product) {
+        return <div> Loading...</div>;
+    }
+    return (
+        <>
+            <div style={{ display: "grid", border: '1px solid #ccc', padding: '10px', margin: '10px', width: '100%' }}>
+                <h2>{product.title}</h2>
+                <img
+                    src={product.image}
+                    alt={product.title}
+                    style={{
+                        Width: '100%', Height: 'auto', display: 'block', marginTop: '10px', maxWidth: '100%',
+                        maxheight: '100%'
+                    }}
+                />
+                <h4></h4>
+                <h3>{product.description && `Description: ${product.description}`}</h3>
+                <InStock quantity={product.quantity} />
+                <p>{`Rating: ${product.clicks}`}</p>
+                <Box >
+                    <Rating
+                        name="simple-controlled"
+                        defaultValue={ratingFunc(product.clicks)} precision={0.2} readOnly
+                    /></Box>
+                <h2>{`Price: $${product.price}`}</h2>
+                <h4>More details :</h4>
+                {product.liters && <p>{`Liters: ${product.liters}`}</p>}
+                {product.brand && <p>{`Brand: ${product.brand}`}</p>}
+                {product.watts && <p>{`Watts: ${product.watts}`}</p>}
+                {product.screen_size && <p>{`Screen Size: ${product.screen_size}`}</p>}
+                {product.size && <p>{`Size: ${product.size}`}</p>}
+                {product.doors && <p>{`Doors: ${product.doors}`}</p>}
 
 
-            <Button variant="contained" onClick={handleAddToCart}>
-                {'Add to Cart'}
-            </Button>
-            <h2>You can also find the product in the following stores :</h2>
-            <MapComponent points={product.available_in} />
-        </div>
+                <Button variant="contained" onClick={() => handleAddToCart(product!.product_id)}>
+                    {'Add to Cart'}
+                </Button>
+                <Button style={{ marginTop: '10px' }} onClick={CompereProduct}>
+                    compere with other product
+                </Button>
+                <h2>You can also find the product in the following stores :</h2>
+                <MapComponent points={product.available_in} />
+            </div>
 
-    </>
-);
+        </>
+    );
 };
 export default ProductDetails;

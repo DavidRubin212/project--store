@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSubmit } from 'react-router-dom'
 
 
-const InStock = ({quantity}: number) => {
-    console.log(quantity);
-    
+const InStock = ({quantity}: number | undefined) => {
+
 
     const [inStock, setInStock] = useState<boolean>(true)
     useEffect(() => {

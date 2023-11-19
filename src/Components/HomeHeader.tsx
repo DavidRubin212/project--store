@@ -16,8 +16,10 @@ const defaultTheme = createTheme();
 const HomeHeader = () => {
 
     const [cartItems, setCartItems] = useState([]);
+    const [login, setLogin] = useState<boolean>(true)
     let cartItemsCount
     const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
+
 
     useEffect(() => {
         cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -36,11 +38,16 @@ const HomeHeader = () => {
                         </Link>
 
                     </Typography>
-                    <CartIcon cartItemsCount={cartItemsCount} />
+
+                    <CartIcon cartItemsCount={cartItemsCount!} />
+
                     {localStorage.getItem("token") ?
-                        <h3 style={{marginLeft: '1%'}}>{localStorage.getItem('user_name')}
+                        <h3 style={{ marginLeft: '1%' }}>{localStorage.getItem('user_name')}
                             <Button variant="text" sx={{ my: 1, mx: 1.5 }}
-                                onClick={() => localStorage.setItem("token", "")}>
+                                onClick={() => {
+                                    localStorage.setItem("token", "")
+                                    setLogin(false)
+                                }}>
                                 log out
                             </Button>
                         </h3>
@@ -75,7 +82,7 @@ const HomeHeader = () => {
                 <nav>
                     <Typography color="inherit" sx={{ flexGrow: 1 }}>
 
-                        <BtnGrups/>
+                        <BtnGrups />
                     </Typography>
 
                 </nav>

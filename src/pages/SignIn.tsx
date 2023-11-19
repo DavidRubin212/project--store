@@ -40,7 +40,7 @@ function SignIn() {
 			if (response.ok) {
 				const data = await response.json();
 				console.log("Server response:", data);
-				localStorage.setItem("user_id", JSON.stringify(data.user_id!))
+				localStorage.setItem("user_id", data.user_id!)
 
 				console.log("User signed in successfully!");
 				localStorage.setItem("token", data.accessToken);
